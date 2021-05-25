@@ -1,94 +1,153 @@
 from classFile import *
-#from gui import *
 from window import *
 from PyQt5 import QtCore, QtGui, QtWidgets
+from _thread import *
+import time
 
-"""
-x, iter_ = F.run(fun, [4, 4], [100 - i for i in range(101)], 100, 1e-8, g)
-print(x)
-F.visualise()
-
-
-fun = "x1^4+x2^4-2x1^2*x2-4*x1+3"
-g = ["(4-x1-x2)"]
-
-fun = "(x1-2)^2+(x2-1)^2"
-#g = ["x1^2-x2", "-2+x1+x2"]
-g = ["x1^2+x2^2-2"] #g = ["x1-2x2+1", "x1^2/4+x2^2-1"]
-
-
-fun = "(x1^2+x2-11)^2+(x1+x2^2-7)^2"
-g = ["(x1-0.05)^2+(x2-2.5)^2-4.84", "4.84-x1^2-(x2-2.5)^2"]
-
-F = CarrollMethod()
-
-x, iter_, fx = F.run(fun, [-1.2, 0.4], 1, 1000, 1e-5, 1e-6, 1e-6, g)
-print(x, fx, iter_)
-F.visualise()
-"""
 
 class Ui_MainWindow(object):
-
-    def setupUi(self, MainWindow):
+    def __init__(self, MainWindow):
         wr_setupUi(self, MainWindow)
+        self.startButton.clicked.connect(self.runAlgorithm)
+        start_new_thread(self.updatingThread, (1,))
 
-    def retranslateUi(self, MainWindow):
-        wr_retranslateUi(self, MainWindow)
+    def updatingThread(self, useless):
+        function = ""
+        constrains = ""
+        while True:
+            time.sleep(0.1)
+            if function != self.getGoalFunction:
+                try:
+                    self.updatePointsAccess()
+                except:
+                    pass
+                function = self.getGoalFunction
+            if constrains != self.getConstraints:
+                try:
+                    self.updateConstrainsAccess()
+                except Exception as e:
+                    print(e)
+                constrains = self.getConstraints
 
-    def runfunc(self):
-        self.startButton.clicked.connect(self.clicked)
+    def updatePointsAccess(self):
+        dimension = self.functionDimension
+        for i in range(1, 6):
+            eval(f"self.x{i}i.setDisabled({i > dimension})")
 
-    def getValues(self):
-        args = []
-        args.append(self.funkcja.toPlainText())#0
-        args.append(self.ogr1.toPlainText())#1
-        args.append(self.ogr2.toPlainText())#2
-        args.append(self.ogr3.toPlainText())#3
-        args.append(self.ogr4.toPlainText())#4
-        args.append(self.ogr5.toPlainText())#5
-        args.append(self.r0.toPlainText())#6
-        args.append(self.L.toPlainText())#7
-        args.append(self.x1i.toPlainText())#8
-        args.append(self.x2i.toPlainText())#9
-        args.append(self.x3i.toPlainText())#10
-        args.append(self.x4i.toPlainText())#11
-        args.append(self.x5i.toPlainText())#12
-        args.append(self.e1.toPlainText())#13
-        args.append(self.e2.toPlainText())#14
-        args.append(self.e3.toPlainText())#15
+    def updateConstrainsAccess(self):
 
-        for i in range(6,16):
-            args[i]=float(args[i])
-        args[7]=int(args[7])
-        return args
+        for j in range(5):
+            for i in range(1, 6):
+                if len(eval(f"self.ogr{i}.toPlainText()")) == 0 and i < 5:
+                    new = eval(f"self.ogr{i+1}.toPlainText()")
+                    #eval(f"self.ogr{i}.setPlainText({str(new)})")
 
-    def clicked(self):
+        empty = []
+        for i in range(1, 6):
+            if len(eval(f"self.ogr{i}.toPlainText()")) == 0:
+                eval(f"self.ogr{i}.setDisabled(False)")
+                empty.append(i)
+        if len(empty) > 1:
+            empty = empty[1:]
+            for i in empty:
+                eval(f"self.ogr{i}.setDisabled(True)")
 
+    @property
+    def getStartingPoint(self):
+        x = []
+        for i in range(1, self.functionDimension + 1):
+            try:
+                xn = float(eval(f"self.x{i}i.toPlainText()"))
+                x.append(xn)
+            except:
+                raise Exception(f"Błędna współrzędna x{i}")
+        return x
+
+    @property
+    def getGoalFunction(self):
+        return self.funkcja.toPlainText()
+
+    @property
+    def getConstraints(self):
+        g = []
+        for i in range(1, 6):
+            try:
+                g_i = eval(f"self.ogr{i}.toPlainText()")
+                if len(g_i) == 0:
+                    pass
+                else:
+                    g.append(g_i)
+            except:
+                raise Exception(f"Problem z ograniczniem g{i}")
+        return g
+
+    @property
+    def getr0(self):
         try:
-            args = self.getValues()
-            print(args)
+            r0 = float(self.r0.toPlainText())
+        except:
+            raise Exception("Błędna wartość r0")
+        return r0
+
+    @property
+    def getMaxIterations(self):
+        try:
+            maxIter = int(self.L.toPlainText())
+            if maxIter <= 0:
+                raise Exception("Błedna liczba iteracji")
+        except:
+            raise Exception("Błedna liczba iteracji")
+
+        return maxIter
+
+    @property
+    def getEpsilon(self):
+        epsilon = []
+        for i in range(1, 4):
+            try:
+                epsilon.append(float(eval(f"self.e{i}.toPlainText()")))
+            except:
+                raise Exception(f"Błędna wartość e{i}")
+        return epsilon
+
+    @property
+    def functionDimension(self):
+        function = self.getGoalFunction
+        varDim = 0
+        try:
+            for i in range(1, 8):
+                if f"x{i}" in function:
+                    varDim = i
+            return varDim
+        except:
+            raise Exception("Błędna funkcja celu")
+
+    def runAlgorithm(self):
+        self.wynik.setPlainText("Trwa liczenie...")
+        try:
             a = CarrollMethod()
-            x = a.run(goalFunction=args[0],
-                      x0=[args[8],args[9],args[10],args[11],args[12]],
-                      r0=args[6],
-                      maxIter=args[7],
-                      epsilon1=args[13],
-                      epsilon2=args[14],
-                      epsilon3=args[15],
-                      g_i=[args[1],args[2],args[3],args[4],args[5]],
-                      visualiseEveryIteration=False,
-                      )
-            self.wynik.setPlainText(str(x))
+            X, iterations, fvalue = a.run(goalFunction=self.getGoalFunction,
+                                          x0=self.getStartingPoint,
+                                          r0=self.getr0,
+                                          maxIter=self.getMaxIterations,
+                                          epsilon1=self.getEpsilon[0],
+                                          epsilon2=self.getEpsilon[1],
+                                          epsilon3=self.getEpsilon[2],
+                                          g_i=self.getConstraints
+                                          )
+            self.wynik.setPlainText(f"Najlepszy punkt x: \n{X}\nNajlepsza wartość f:{fvalue}\nIteracje:{iterations}")
             a.visualise()
+
         except Exception as E:
             print(E)
+            self.wynik.setPlainText(str(E))
+
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    ui.runfunc()
+    ui = Ui_MainWindow(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())

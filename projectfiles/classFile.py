@@ -5,7 +5,6 @@ from my_parser import f
 import matplotlib.pyplot as plt
 
 
-
 class CarrollMethod:
     def __init__(self):
         self.output = None  # define empty history
@@ -25,20 +24,20 @@ class CarrollMethod:
             ):
 
         if not self.fitness(x0, g_i):  # if starting point is outside constraints raise error
-            raise Exception("x0 not in g_i")
-        x0=x0[:2]
+            raise Exception("Punkt początkowy poza ograniczeniami")
+
         output = [x0]  # first iteration added to history
         N = len(x0)  # dimension of goal function
         iter_ = 0  # iteration counter
 
         while r0 > epsilon1:
             iter_ += 1  # count iteration
-            F = goalFunction + f"-{r0} * (" + "+".join([f"1/({g})" for g in g_i]) + ")"  # add penalty function to goal function
+            F = goalFunction + f"-{r0} * (" + "+".join(
+                [f"1/({g})" for g in g_i]) + ")"  # add penalty function to goal function
             # find minimum of goal+penalty function using Gauss-Seidel gradient method
             xk, useless = GaussSeidelMethod().run(F, x0, maxIter,
-                                                  epsilon2, epsilon3)  # pass goal+penalty fun., starting point, max. iter. and
-
-
+                                                  epsilon2,
+                                                  epsilon3)  # pass goal+penalty fun., starting point, max. iter. and
 
             if self.fitness(xk, g_i):
                 output.append(xk)
@@ -53,6 +52,7 @@ class CarrollMethod:
         self.output = output  # save points history
 
         return output[-1], iter_, f(goalFunction, output[-1])  # return optimal point and iteration number
+
     @staticmethod
     def fitness(x0: List[float], g_i: List[str]) -> bool:  # check if point is in constrains
         for g in g_i:  # loop thru inequality constraints
@@ -85,18 +85,16 @@ class GaussSeidelMethod:
 
         for _ in range(maxIter):  # run loop until stop crit. met or max. iter. reached
             iter_ += 1  # count iteration
-            gradient = self.grad(iter_,N)  # calculate gradient -> d(k)
+            direction = self.getDirection(iter_, N)  # calculate gradient -> d(k)
 
-            alfa = GoldenMethod().run(fun, x0, gradient, epsilon2)  # Golden-Section Method -> optimize in direction d(k)
+            alfa = GoldenMethod().run(fun, x0, direction,
+                                      epsilon2)  # Golden-Section Method -> optimize in direction d(k)
 
-            xk = [x0[i] + alfa * gradient[i] for i in range(N)]  # New Point -> x(k+1) = x(k) + d(k) * a(k)
+            xk = [x0[i] + alfa * direction[i] for i in range(N)]  # New Point -> x(k+1) = x(k) + d(k) * a(k)
             output.append(xk)  # add new point to history
-            #print(f(fun, xk)-f(fun, output[iter_-1]))
-            if abs(f(fun, xk)-f(fun, output[iter_-1])) <= epsilon3:
-                #print("pierwsze ogranicznie")
+            if abs(f(fun, xk) - f(fun, output[iter_ - 1])) <= epsilon3:
                 break
             elif sum([(xk[i] - x0[i]) ** 2 for i in range(N)]) <= epsilon2:  # Check if stop criterion met
-                #print("drugie ogranicznie")
                 break
             x0 = xk  # update point
 
@@ -106,7 +104,7 @@ class GaussSeidelMethod:
         return output[-1], iter_  # return optimal point and iteration number
 
     @staticmethod
-    def grad(iteration, dimension):
+    def getDirection(iteration, dimension):
         output = [0] * dimension
         output[iteration % dimension] = 1
         return output
@@ -115,7 +113,6 @@ class GaussSeidelMethod:
         if self.fun is None or self.output is None:
             raise Exception("There is nothing to show...")
         visual(self.fun, self.output, [], sf=sf, layers=layers)
-
 
 
 class GoldenMethod:
@@ -150,8 +147,8 @@ class GoldenMethod:
 
 def visual(fun: str, x: List[List[float]], g: List[str], sf: float = 25, layers: int = 20):
     plt.plot(range(1, len(x) + 1), [f(fun, xn) for xn in x])
-    plt.xlabel("Iteration")
-    plt.ylabel("goal function value")
+    plt.xlabel("Iteracja")
+    plt.ylabel("Wartość funkcji celu")
     plt.show()
 
     if len(x[0]) != 2:
@@ -177,10 +174,15 @@ def visual(fun: str, x: List[List[float]], g: List[str], sf: float = 25, layers:
 
     ax.plot(x1, x2)
     ax.scatter(x1[-1], x2[-1])
+
     for g_i in g:
-        c = f(g_i, [0, 0])
-        b = f(g_i, [0, 1]) - c
-        ax.plot(xlist, [-f(g_i, [x, 0]) / b for x in xlist])
+        for i in range(len(xlist)):
+            for j in range(len(ylist)):
+                Z[i, j] = f(g_i, [ylist[j], xlist[i]])
+        ax.contour(X, Y, Z, [0], colors='gray')
+
     ax.set_xlim(-dx, dx)
     ax.set_ylim(-dx, dx)
+    plt.ylabel("x2")
+    plt.xlabel("x1")
     plt.show()

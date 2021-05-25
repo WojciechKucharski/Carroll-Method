@@ -64,19 +64,19 @@ def wr_setupUi(self, MainWindow):
     self.ogr1.setObjectName("ogr1")
     self.ogr2 = QtWidgets.QTextEdit(self.centralwidget)
     self.ogr2.setGeometry(QtCore.QRect(100, 230, 291, 31))
-    self.ogr2.setPlainText("4-x1-x2")
+
     self.ogr2.setObjectName("ogr2")
     self.ogr3 = QtWidgets.QTextEdit(self.centralwidget)
     self.ogr3.setGeometry(QtCore.QRect(100, 270, 291, 31))
-    self.ogr3.setPlainText("4-x1-x2")
+
     self.ogr3.setObjectName("ogr3")
     self.ogr4 = QtWidgets.QTextEdit(self.centralwidget)
     self.ogr4.setGeometry(QtCore.QRect(100, 310, 291, 31))
-    self.ogr4.setPlainText("4-x1-x2")
+
     self.ogr4.setObjectName("ogr4")
     self.ogr5 = QtWidgets.QTextEdit(self.centralwidget)
     self.ogr5.setGeometry(QtCore.QRect(100, 350, 291, 31))
-    self.ogr5.setPlainText("4-x1-x2")
+
     self.ogr5.setObjectName("ogr5")
 #Napisy
     self.Ograniczenie1 = QtWidgets.QLabel(self.centralwidget)
@@ -256,7 +256,7 @@ def wr_setupUi(self, MainWindow):
     self.statusbar.setObjectName("statusbar")
     MainWindow.setStatusBar(self.statusbar)
 
-    self.retranslateUi(MainWindow)
+    wr_retranslateUi(self, MainWindow)
     QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
 def wr_retranslateUi(self, MainWindow):
