@@ -25,6 +25,10 @@ class CarrollMethod:
 
         if not self.fitness(x0, g_i):  # if starting point is outside constraints raise error
             raise Exception("Punkt początkowy poza ograniczeniami")
+        else:
+            for g in g_i:  # loop thru inequality constraints
+                if f(g, x0) == 0:
+                    raise Exception("Punkt początkowy nie moze leżec na ograniczeniu")
 
         output = [x0]  # first iteration added to history
         N = len(x0)  # dimension of goal function

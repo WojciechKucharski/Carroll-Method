@@ -216,7 +216,7 @@ def wr_setupUi(self, MainWindow):
 #POLE NA e1
     self.e1 = QtWidgets.QTextEdit(self.centralwidget)
     self.e1.setGeometry(QtCore.QRect(50, 470, 341, 31))
-    self.e1.setPlainText("1e-6")
+    self.e1.setPlainText("1e-11")
     self.e1.setObjectName("e1")
 #NAPIS e2
     self.epsilon2 = QtWidgets.QLabel(self.centralwidget)
@@ -230,7 +230,7 @@ def wr_setupUi(self, MainWindow):
 #POLE NA e2
     self.e2 = QtWidgets.QTextEdit(self.centralwidget)
     self.e2.setGeometry(QtCore.QRect(50, 510, 341, 31))
-    self.e2.setPlainText("1e-6")
+    self.e2.setPlainText("1e-11")
     self.e2.setObjectName("e2")
 #NAPIS e3
     self.epsilon3 = QtWidgets.QLabel(self.centralwidget)
@@ -244,7 +244,7 @@ def wr_setupUi(self, MainWindow):
 #POLE NA e3
     self.e3 = QtWidgets.QTextEdit(self.centralwidget)
     self.e3.setGeometry(QtCore.QRect(50, 550, 341, 31))
-    self.e3.setPlainText("1e-6")
+    self.e3.setPlainText("1e-11")
     self.e3.setObjectName("e3")
 #MENU
     MainWindow.setCentralWidget(self.centralwidget)
@@ -261,7 +261,7 @@ def wr_setupUi(self, MainWindow):
 
 def wr_retranslateUi(self, MainWindow):
     _translate = QtCore.QCoreApplication.translate
-    MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+    MainWindow.setWindowTitle(_translate("MainWindow", "Metoda Carrolla"))
     self.startButton.setText(_translate("MainWindow", "Uruchom Program"))
     self.label.setText(_translate("MainWindow", "F(x):"))
     self.label_2.setText(_translate("MainWindow", "Metoda Carolla"))
