@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['..\\projectfiles\\main.py'],
-             pathex=['C:\\Users\\wojte\\Desktop\\Python\\TiMO2\\dist'],
+             pathex=['C:\\Users\\wojte\\Desktop\\Python\\Carroll-Method\\dist'],
              binaries=[],
              datas=[],
              hiddenimports=[],
